@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/iancoleman/orderedmap"
+	"github.com/podhmo/emoji-api/seed/design"
 	"github.com/podhmo/gos/openapigen"
 	"github.com/podhmo/gos/pkg/maplib"
 )
@@ -12,38 +13,24 @@ import (
 func main() {
 	b := openapigen.NewBuilder(openapigen.DefaultConfig())
 
-	// types
-	Name := openapigen.Define("Name", b.String()).Doc("name of something")
-	openapigen.Define("DateTime", b.String().Format("date-time")) // for ReferenceByName
-
-	Task := openapigen.Define("Task", b.Object(
-		b.Field("name", b.Reference(Name)),
-		b.Field("done", b.Bool()),
-		b.Field("createdAt", b.ReferenceByName("DateTime")),
-	))
-
-	ListTask := b.Action("ListTask",
-		b.Input(b.Param("sort", b.String().Enum([]string{"createdAt", "-createdAt"})).AsQuery()),
-		b.Output(b.Array(Task)),
-	)
-
 	// routing
 	Error := openapigen.Define("Error", b.Object(
 		b.Field("message", b.String()),
 	)).Doc("default error")
 	r := openapigen.NewRouter(Error)
 	{
-		r := r.Tagged("task")
-		r.Get("/tasks", ListTask)
+		r := r.Tagged("emoji")
+		r.Post("/emoji/translate", design.Translate)
+		r.Post("/emoji/suggest", design.Suggest)
 	}
 
 	// openapi data
 	doc, err := maplib.Merge(orderedmap.New(), &openapigen.OpenAPI{
 		OpenAPI: "3.0.3",
 		Info: openapigen.Info{
-			Title:   "task API",
+			Title:   "emoji API",
 			Version: "0.0.0",
-			Doc:     "simple list tasks API",
+			Doc:     "emoji API",
 		},
 		Servers: []openapigen.Server{
 			{
