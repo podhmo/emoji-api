@@ -1,4 +1,4 @@
-package emoji
+package emojilib
 
 import (
 	"sort"
