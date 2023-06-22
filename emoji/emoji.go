@@ -13,30 +13,6 @@ func Translate(text string) string {
 	return emoji.Parse(text)
 }
 
-type SuggestOption struct {
-	Limit   int
-	Reverse bool
-}
-
-type Definition struct {
-	Alias string
-	Char  string
-}
-
-var pool = &sync.Pool{
-	New: func() any {
-		source := emoji.Map()
-		r := make([]Definition, len(source))
-		i := 0
-		for alias, char := range source {
-			r[i] = Definition{Alias: alias, Char: char}
-			i++
-		}
-		sort.SliceStable(r, func(i, j int) bool { return r[i].Alias < r[j].Alias })
-		return r
-	},
-}
-
 // Suggest returns the suggestions.
 func Suggest(prefix string, option SuggestOption) []Definition {
 	candidates := pool.Get().([]Definition) // more cache?
@@ -76,4 +52,28 @@ func Suggest(prefix string, option SuggestOption) []Definition {
 		}
 	}
 	return r
+}
+
+type SuggestOption struct {
+	Limit   int
+	Reverse bool
+}
+
+type Definition struct {
+	Alias string
+	Char  string
+}
+
+var pool = &sync.Pool{
+	New: func() any {
+		source := emoji.Map()
+		r := make([]Definition, len(source))
+		i := 0
+		for alias, char := range source {
+			r[i] = Definition{Alias: alias, Char: char}
+			i++
+		}
+		sort.SliceStable(r, func(i, j int) bool { return r[i].Alias < r[j].Alias })
+		return r
+	},
 }
