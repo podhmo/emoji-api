@@ -35,15 +35,15 @@ func TestSuggest(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []string
+		want []emoji.Definition
 	}{
-		{name: "simple", args: args{prefix: ":di", option: emoji.SuggestOption{}},
-			want: []string{"💠", "♦️", "💠", "♦️", "🇩🇬", "🔅", "🎯", "😞", "😞", "😥", "🥸", "➗", "🤿", "🪔", "💫", "😵"},
+		{name: "simple", args: args{prefix: ":diz", option: emoji.SuggestOption{}},
+			want: []emoji.Definition{{":dizzy:", "💫"}, {":dizzy_face:", "😵"}},
 		},
 		{name: "simple-with-limit3", args: args{prefix: ":di", option: emoji.SuggestOption{Limit: 3}},
-			want: []string{"💠", "♦️", "💠"}},
+			want: []emoji.Definition{{":diamond_shape_with_a_dot_inside:", "💠"}, {":diamond_suit:", "♦️"}, {":diamond_with_a_dot:", "💠"}}},
 		{name: "simple-with-reverse-limit3", args: args{prefix: ":di", option: emoji.SuggestOption{Limit: 3, Reverse: true}},
-			want: []string{"😵", "💫", "🪔"}},
+			want: []emoji.Definition{{":dizzy_face:", "😵"}, {":dizzy:", "💫"}, {":diya_lamp:", "🪔"}}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
