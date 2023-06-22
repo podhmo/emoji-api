@@ -1,0 +1,10 @@
+# see: https://github.com/deepmap/oapi-codegen/blob/ad62d73d8d22aa251d06b490b259790919899eab/pkg/codegen/configuration.go#L14
+package: oapigen
+generate:
+  models: true
+  chi-server: true
+  strict-server: true
+  # embedded-spec: true
+compatibility:
+  always-prefix-enum-values: true
+  # apply-chi-middleware-first-to-last: true
