@@ -37,8 +37,13 @@ func TestSuggest(t *testing.T) {
 		args args
 		want []string
 	}{
-		{name: "simple", args: args{prefix: ":di", option: emoji.SuggestOption{}}, want: []string{"💠", "♦️", "💠", "♦️", "🇩🇬", "🔅", "🎯", "😞", "😞", "😥", "🥸", "➗", "🤿", "🪔", "💫", "😵"}},
-		{name: "simple-with-limit3", args: args{prefix: ":di", option: emoji.SuggestOption{Limit: 3}}, want: []string{"💠", "♦️", "💠"}},
+		{name: "simple", args: args{prefix: ":di", option: emoji.SuggestOption{}},
+			want: []string{"💠", "♦️", "💠", "♦️", "🇩🇬", "🔅", "🎯", "😞", "😞", "😥", "🥸", "➗", "🤿", "🪔", "💫", "😵"},
+		},
+		{name: "simple-with-limit3", args: args{prefix: ":di", option: emoji.SuggestOption{Limit: 3}},
+			want: []string{"💠", "♦️", "💠"}},
+		{name: "simple-with-reverse-limit3", args: args{prefix: ":di", option: emoji.SuggestOption{Limit: 3, Reverse: true}},
+			want: []string{"😵", "💫", "🪔"}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

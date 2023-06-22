@@ -14,8 +14,8 @@ func Translate(text string) string {
 }
 
 type SuggestOption struct {
-	Limit int
-	// TODO: order
+	Limit   int
+	Reverse bool
 }
 
 type pair struct {
@@ -43,20 +43,36 @@ func Suggest(prefix string, option SuggestOption) []string {
 	defer pool.Put(candidates)
 
 	limit := option.Limit
+	reversed := option.Reverse
+
 	var r []string
 	if limit != 0 {
 		r = make([]string, 0, limit)
 	}
 
 	// O(N) (use trie?)
-	for _, p := range candidates {
-		if !strings.HasPrefix(p.left, prefix) {
-			continue
-		}
+	if !reversed {
+		for _, p := range candidates {
+			if !strings.HasPrefix(p.left, prefix) {
+				continue
+			}
 
-		r = append(r, p.right)
-		if limit > 0 && len(r) >= limit {
-			break
+			r = append(r, p.right)
+			if limit > 0 && len(r) >= limit {
+				break
+			}
+		}
+	} else {
+		for i := len(candidates) - 1; i >= 0; i-- {
+			p := candidates[i]
+			if !strings.HasPrefix(p.left, prefix) {
+				continue
+			}
+
+			r = append(r, p.right)
+			if limit > 0 && len(r) >= limit {
+				break
+			}
 		}
 	}
 	return r
