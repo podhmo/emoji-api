@@ -4,6 +4,6 @@ seed:
 .PHONY: seed
 
 gen:
-	mkdir -p oapigen
-	go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest --config ./seed/tools/oapi-conf.yaml openapi.json > oapigen/server.go 
+	mkdir -p api/oapigen
+	go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest --config ./seed/tools/oapi-conf.yaml openapi.json > api/oapigen/server.go 
 .PHONY: gen
