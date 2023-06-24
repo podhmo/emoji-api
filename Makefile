@@ -4,10 +4,14 @@ seed:
 .PHONY: seed
 
 gen:
+	$(MAKE) _gen
+	$(MAKE) _stub
+.PHONY: gen
+_gen:
 	mkdir -p api/oapigen
 	go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest --config ./seed/tools/oapi-conf.yaml openapi.json > api/oapigen/server.go 
-.PHONY: gen
-
-stub:
+.PHONY: _gen
+_stub:
 	go run ./seed/tools/gen-stub --doc openapi.json --src ./api/oapigen --dst ./api/controller
 	gofmt -w ./api/controller
+.PHONY: _stub
