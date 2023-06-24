@@ -267,7 +267,7 @@ func run(options Options) error {
 				if len(results.List) == 2 {
 					r0 := results.List[0]
 					if len(r0.Names) == 0 {
-						r0.Names = []*ast.Ident{{Name: "output", NamePos: results.Pos() + 1}}
+						r0.Names = []*ast.Ident{{Name: "response", NamePos: results.Pos() + 1}}
 					}
 					if typename, ok := r0.Type.(*ast.Ident); ok {
 						r0.Type = &ast.SelectorExpr{X: &ast.Ident{Name: "oapigen", NamePos: typename.Pos()}, Sel: typename}
