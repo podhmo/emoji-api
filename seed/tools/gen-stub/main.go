@@ -152,7 +152,6 @@ func run(options Options) error {
 			if ob == nil {
 				continue
 			}
-			fmt.Printf("%T\n", ob.Decl)         // nolint
 			decl, ok := ob.Decl.(*ast.TypeSpec) // nolint
 			if !ok {
 				continue
