@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"go/ast"
@@ -12,10 +14,10 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"regexp"
-	"runtime/debug"
 	"sort"
 	"strconv"
 	"strings"
@@ -32,7 +34,8 @@ type Options struct {
 	DocName    string
 	Prefix     string
 
-	Debug bool
+	Debug           bool
+	GuessImportPath func(dir string) string
 }
 
 func main() {
@@ -48,13 +51,45 @@ func main() {
 	pflag.BoolVar(&options.Debug, "debug", false, "debug")
 	pflag.Parse()
 
-	if options.BasePkg == "" {
-		if info, ok := debug.ReadBuildInfo(); ok {
-			options.BasePkg = info.Main.Path
+	if err := func() error {
+		var modinfo struct {
+			Path      string
+			Main      bool
+			Dir       string
+			GoMod     string
+			GoVersion string
 		}
+
+		args := []string{"go", "list", "-m", "-json"}
+		if options.BasePkg != "" {
+			args = append(args, options.BasePkg)
+		}
+		out, err := exec.Command(args[0], args[1:]...).Output()
+		if ee := (*exec.ExitError)(nil); errors.As(err, &ee) {
+			return fmt.Errorf("go command exited unsuccessfully: %v\n%s", ee.ProcessState.String(), ee.Stderr)
+		} else if err != nil {
+			return err
+		}
+		if err := json.Unmarshal(out, &modinfo); err != nil {
+			return fmt.Errorf("unexpected input `go list -m json`: %w", err)
+		}
+
+		options.BasePkg = modinfo.Path
 		if options.Debug {
-			log.Printf("[DEBUG] base package is %q (from buildinfo)", options.BasePkg)
+			log.Printf("[DEBUG] base package is %q (from go list -m)", options.BasePkg)
 		}
+		cwd, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+
+		options.GuessImportPath = func(name string) string {
+			suffix, _ := filepath.Rel(modinfo.Dir, filepath.Join(cwd, name))
+			return path.Join(options.BasePkg, suffix)
+		}
+		return nil
+	}(); err != nil {
+		log.Printf("load modinfo is failed. %+v", err)
 	}
 
 	if options.SrcDir == "" || options.DstDirList == nil || options.DocName == "" {
@@ -67,7 +102,6 @@ func main() {
 }
 
 func run(options Options) error {
-	basePkg := options.BasePkg
 	srcdir := options.SrcDir
 	dstdirList := options.DstDirList
 	docname := options.DocName
@@ -207,7 +241,7 @@ func run(options Options) error {
 			}
 			if !found {
 				astutil.AddImport(fset, f.syntax, "context")
-				astutil.AddNamedImport(fset, f.syntax, "oapigen", path.Join(basePkg, srcdir))
+				astutil.AddNamedImport(fset, f.syntax, "oapigen", options.GuessImportPath(srcdir))
 			}
 		}
 
@@ -510,7 +544,7 @@ func run(options Options) error {
 				if !ok || typeset.xGoPackage == "" || len(typeset.typeNames) == 0 {
 					continue
 				}
-				fmt.Fprintf(w, "\t%s %q\n", typeset.xGoPackage, path.Join(basePkg, dstdir)) // nolint
+				fmt.Fprintf(w, "\t%s %q\n", typeset.xGoPackage, options.GuessImportPath(dstdir)) // nolint
 			}
 			fmt.Fprintln(w, ")") // nolint
 			fmt.Fprintln(w, "")  // nolint
