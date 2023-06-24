@@ -246,9 +246,6 @@ func run(options Options) error {
 			// extract method parameters signature
 			fn := def.field.Type.(*ast.FuncType)
 			if len(fn.Params.List[0].Names) > 0 {
-				if fn.Params.List[0].Names[0].Name == "c" {
-					fn.Params.List[0].Names[0].Name = "gctx"
-				}
 				for _, p := range fn.Params.List[1:] {
 					if len(p.Names) > 0 {
 						name := p.Names[0].Name
