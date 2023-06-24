@@ -1,6 +1,6 @@
 # generate seed/design => openapi.json
 seed:
-	go run ./seed/tools/gendoc.go > openapi.json
+	go run ./seed/tools/gen-doc/ > openapi.json
 	go run github.com/getkin/kin-openapi/cmd/validate@latest openapi.json
 .PHONY: seed
 
