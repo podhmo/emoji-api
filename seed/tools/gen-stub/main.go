@@ -700,13 +700,6 @@ func SelectDirByXGoPackage(xGoPackage string, dirs []string) string {
 
 func TagFromFileName(filename string) string {
 	base := strings.TrimSuffix(filepath.Base(filename), ".go")
-
-	// 特別扱い (TODO: 後で治したい)
-	switch base {
-	case "growth_topic":
-		return "topic"
-	}
-
 	tag := strings.ReplaceAll(base, "_", "-") // foo_bar -> foo-bar
 	return tag
 }
