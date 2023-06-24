@@ -4,6 +4,7 @@ import (
 	"context"
 
 	oapigen "github.com/podhmo/emoji-api/api/oapigen"
+	"github.com/podhmo/emoji-api/emojilib"
 )
 
 type EmojiController struct{}
@@ -25,5 +26,6 @@ func (c *EmojiController) Suggest(ctx context.Context, request oapigen.SuggestRe
 //
 // * body  :requestBody                         -- "need: var body oapigen.TranslateJSONBody; gctx.ShouldBindJSON(&body); "
 func (c *EmojiController) Translate(ctx context.Context, request oapigen.TranslateRequestObject) (response oapigen.TranslateResponseObject, err error) {
+	response = oapigen.Translate200JSONResponse(emojilib.Translate(request.Body.Text))
 	return
 }
