@@ -10,3 +10,4 @@ gen:
 
 stub:
 	go run ./seed/tools/gen-stub --doc openapi.json --src ./api/oapigen --dst ./api/controller
+	gofmt -w ./api/controller
