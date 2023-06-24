@@ -207,6 +207,7 @@ func run(options Options) error {
 				}
 			}
 			if !found {
+				astutil.AddImport(fset, f.syntax, "context")
 				astutil.AddNamedImport(fset, f.syntax, "oapigen", path.Join(basePkg, srcdir))
 			}
 		}
@@ -265,6 +266,22 @@ func run(options Options) error {
 					}
 				}
 			}
+			// transform to use named-return
+			if results := fn.Results; results != nil && results.List != nil {
+				if len(results.List) == 2 {
+					r0 := results.List[0]
+					if len(r0.Names) == 0 {
+						r0.Names = []*ast.Ident{{Name: "output", NamePos: results.Pos() + 1}}
+					}
+					if typename, ok := r0.Type.(*ast.Ident); ok {
+						r0.Type = &ast.SelectorExpr{X: &ast.Ident{Name: "oapigen", NamePos: typename.Pos()}, Sel: typename}
+					}
+					if len(results.List[1].Names) == 0 {
+						results.List[1].Names = []*ast.Ident{{Name: "err", NamePos: results.Pos() + 2}}
+					}
+				}
+			}
+
 			name := def.field.Names[0].Name
 			if err := printer.Fprint(buf, fset, fn); err != nil {
 				return fmt.Errorf("extract signature, tag=%s, method=%s", tag, name)
@@ -396,6 +413,8 @@ func run(options Options) error {
 				}
 				continue
 			}
+
+			// not defined yet
 
 			fmt.Fprintln(w, "\n// "+strings.TrimSpace(strings.Join(comments, "\n// "))) // nolint
 			fmt.Fprintf(w, "func (c *%s) %s", typeName, name)                           // nolint
