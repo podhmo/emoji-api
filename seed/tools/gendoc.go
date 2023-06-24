@@ -6,6 +6,7 @@ import (
 
 	"github.com/iancoleman/orderedmap"
 	"github.com/podhmo/emoji-api/seed/design"
+	"github.com/podhmo/emoji-api/seed/design/action"
 	"github.com/podhmo/gos/openapigen"
 	"github.com/podhmo/gos/pkg/maplib"
 )
@@ -14,14 +15,11 @@ func main() {
 	b := openapigen.NewBuilder(openapigen.DefaultConfig())
 
 	// routing
-	Error := openapigen.Define("Error", b.Object(
-		b.Field("message", b.String()),
-	)).Doc("default error")
-	r := openapigen.NewRouter(Error)
+	r := openapigen.NewRouter(design.Error)
 	{
 		r := r.Tagged("emoji")
-		r.Post("/emoji/translate", design.Translate)
-		r.Post("/emoji/suggest", design.Suggest)
+		r.Post("/emoji/translate", action.EmojiTranslate)
+		r.Post("/emoji/suggest", action.EmojiSuggest)
 	}
 
 	// openapi data
