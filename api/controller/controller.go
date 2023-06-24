@@ -7,7 +7,7 @@ type ControllerController struct {
 }
 
 // NewControllerController :
-func NewControllerController() *ControllerController{
+func NewControllerController() *ControllerController {
 	return &ControllerController{
 		EmojiController: NewEmojiController(),
 	}
