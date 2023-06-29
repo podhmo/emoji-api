@@ -17,6 +17,7 @@ import (
 )
 
 // TODO: 404 with application/json
+// TODO: request/response validation
 
 func TestEmojiTranslate(t *testing.T) {
 	c := &controller.ControllerController{} // uggly name
