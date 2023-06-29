@@ -3,6 +3,10 @@ emoji api server (sample project for go)
 
 ## code generation flow
 
+```console
+$ make
+```
+
 ```mermaid
 flowchart TD
   seed/design --> openapi.json
