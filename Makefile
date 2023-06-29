@@ -1,3 +1,7 @@
+default:
+	$(MAKE) seed
+	$(MAKE) gen
+
 # generate seed/design => openapi.json
 seed:
 	go run ./seed/tools/gen-doc/ > openapi.json

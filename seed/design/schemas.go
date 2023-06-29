@@ -13,8 +13,8 @@ var (
 
 // emoji
 var (
-	EmojiDefinition = b.Object(
+	EmojiDefinition = openapigen.Define("EmojiDefinition", b.Object(
 		b.Field("alias", b.String().Example(":dizzy:")),
 		b.Field("char", b.String().Example("💫")),
-	)
+	))
 )
