@@ -19,6 +19,12 @@ const (
 	SuggestJSONBodySortDesc SuggestJSONBodySort = "desc"
 )
 
+// EmojiDefinition defines model for EmojiDefinition.
+type EmojiDefinition struct {
+	Alias string `json:"alias"`
+	Char  string `json:"char"`
+}
+
 // Error default error
 type Error struct {
 	Message string `json:"message"`
@@ -225,10 +231,7 @@ type SuggestResponseObject interface {
 	VisitSuggestResponse(w http.ResponseWriter) error
 }
 
-type Suggest200JSONResponse []struct {
-	Alias string `json:"alias"`
-	Char  string `json:"char"`
-}
+type Suggest200JSONResponse []EmojiDefinition
 
 func (response Suggest200JSONResponse) VisitSuggestResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")

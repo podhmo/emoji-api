@@ -105,22 +105,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "properties": {
-                      "alias": {
-                        "type": "string",
-                        "example": ":dizzy:"
-                      },
-                      "char": {
-                        "type": "string",
-                        "example": "💫"
-                      }
-                    },
-                    "required": [
-                      "alias",
-                      "char"
-                    ],
-                    "additionalProperties": false
+                    "$ref": "#/components/schemas/EmojiDefinition"
                   }
                 }
               }
@@ -155,6 +140,24 @@
         },
         "required": [
           "message"
+        ],
+        "additionalProperties": false
+      },
+      "EmojiDefinition": {
+        "type": "object",
+        "properties": {
+          "alias": {
+            "type": "string",
+            "example": ":dizzy:"
+          },
+          "char": {
+            "type": "string",
+            "example": "💫"
+          }
+        },
+        "required": [
+          "alias",
+          "char"
         ],
         "additionalProperties": false
       }

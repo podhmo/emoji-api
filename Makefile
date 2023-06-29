@@ -1,3 +1,7 @@
+default:
+	$(MAKE) seed
+	$(MAKE) gen
+
 # generate seed/design => openapi.json
 seed:
 	go run ./seed/tools/gen-doc/ > openapi.json
@@ -15,6 +19,6 @@ _gen:
 .PHONY: _gen
 # generate (openapi.json, oapigen) => api/controller
 _stub:
-	go run ./seed/tools/gen-stub --doc openapi.json --src ./api/oapigen --dst ./api/controller
-	gofmt -w ./api/controller
+	go run ./seed/tools/gen-stub --doc openapi.json --src ./api/oapigen --dst ./api
+	gofmt -w ./api
 .PHONY: _stub
