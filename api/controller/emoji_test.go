@@ -2,16 +2,16 @@ package controller_test
 
 import (
 	"bytes"
-	"fmt"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"net/http/httputil"
 	"os"
 	"strconv"
 	"testing"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/google/go-cmp/cmp"
 	"github.com/podhmo/emoji-api/api/controller"
 	oapigen "github.com/podhmo/emoji-api/api/oapigen"
 )
@@ -23,17 +23,27 @@ func TestEmojiTranslate(t *testing.T) {
 	c.EmojiController = controller.NewEmojiController()
 	h := newHandler(c)
 
-	ts := httptest.NewServer(h)
-	defer ts.Close()
-
-	req, _ := http.NewRequest("POST", ts.URL+"/emoji/translate", bytes.NewBufferString(`{"text": "hmm :dizzy:"}`))
+	req, _ := http.NewRequest("POST", "/emoji/translate", bytes.NewBufferString(`{"text": "hmm :dizzy:"}`))
 	req.Header.Set("Content-Type", "application/json")
 
-	res, err := http.DefaultClient.Do(req)
-	b, err2 := httputil.DumpResponse(res, true)
-	fmt.Fprintln(os.Stderr, "----------------------------------------")
-	fmt.Fprintln(os.Stderr, string(b), err, err2)
-	fmt.Fprintln(os.Stderr, "----------------------------------------")
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+	res := rec.Result()
+
+	if want, got := http.StatusOK, res.StatusCode; want != got {
+		t.Fatalf("status code: want=%d, but got=%d", want, got)
+	}
+
+	var got string
+	if err := json.NewDecoder(res.Body).Decode(&got); err != nil {
+		t.Errorf("unexpected error (json.Unmarshal): %+v", err)
+	}
+	defer res.Body.Close()
+
+	want := `hmm 💫`
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("response body, mismatch (-want +got):\n%s", diff)
+	}
 }
 
 func newHandler(ssi oapigen.StrictServerInterface) http.Handler {
