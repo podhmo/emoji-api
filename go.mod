@@ -7,6 +7,7 @@ require (
 	github.com/enescakir/emoji v1.0.0
 	github.com/getkin/kin-openapi v0.117.0
 	github.com/go-chi/chi/v5 v5.0.8
+	github.com/google/go-cmp v0.5.9
 	github.com/iancoleman/orderedmap v0.2.0
 	github.com/podhmo/gos v0.0.6
 	github.com/spf13/pflag v1.0.5
