@@ -19,6 +19,6 @@ _gen:
 .PHONY: _gen
 # generate (openapi.json, oapigen) => api/controller
 _stub:
-	go run ./seed/tools/gen-stub --doc openapi.json --src ./api/oapigen --dst ./api/controller
+	go run ./seed/tools/gen-stub --doc openapi.json --src ./api/oapigen --dst ./api
 	gofmt -w ./api/controller
 .PHONY: _stub
