@@ -46,6 +46,37 @@ func TestEmojiTranslate(t *testing.T) {
 	}
 }
 
+func TestEmojiSuggest(t *testing.T) {
+	c := &controller.ControllerController{} // uggly name
+	c.EmojiController = controller.NewEmojiController()
+	h := newHandler(c)
+
+	req, _ := http.NewRequest("POST", "/emoji/suggest", bytes.NewBufferString(`{"prefix": ":diz"}`))
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+	res := rec.Result()
+
+	if want, got := http.StatusOK, res.StatusCode; want != got {
+		t.Fatalf("status code: want=%d, but got=%d", want, got)
+	}
+
+	var got []oapigen.EmojiDefinition
+	if err := json.NewDecoder(res.Body).Decode(&got); err != nil {
+		t.Errorf("unexpected error (json.Unmarshal): %+v", err)
+	}
+	defer res.Body.Close()
+
+	want := []oapigen.EmojiDefinition{
+		{Alias: ":dizzy:", Char: "💫"},
+		{Alias: ":dizzy_face:", Char: "😵"},
+	}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("response body, mismatch (-want +got):\n%s", diff)
+	}
+}
+
 func newHandler(ssi oapigen.StrictServerInterface) http.Handler {
 	router := chi.NewRouter()
 	if ok, _ := strconv.ParseBool(os.Getenv("DEBUG")); ok {
